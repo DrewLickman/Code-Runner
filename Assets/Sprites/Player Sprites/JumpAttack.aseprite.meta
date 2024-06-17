@@ -212,6 +212,7 @@ ScriptedImporter:
     cells:
     - name: JumpAttack
       frameIndex: 0
+      additiveSortOrder: 0
       cellRect:
         x: 1
         y: 2

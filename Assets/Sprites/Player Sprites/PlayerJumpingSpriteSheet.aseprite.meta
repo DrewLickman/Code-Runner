@@ -212,6 +212,7 @@ ScriptedImporter:
     cells:
     - name: PlayerJumpingSpriteSheet
       frameIndex: 0
+      additiveSortOrder: 0
       cellRect:
         x: 17
         y: 0
