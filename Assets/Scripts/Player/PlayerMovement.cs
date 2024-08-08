@@ -507,7 +507,6 @@ public class PlayerMovement : MonoBehaviour
 
         _recoilDir = true; //add a recoil effect on the player
         canDoubleJump = true; //if player hit enemy, allow another air jump and dash
-        dashingCooldown = 0;
         canDash = true;
         timeSinceDash += 1;
         
