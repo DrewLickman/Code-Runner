@@ -22384,9 +22384,30 @@ MonoBehaviour:
   recoilLength: 0
   recoilFactor: 0
   moveSpeed: 5
+  applyCollisionKnockback: 1
+  collisionKnockbackX: 32
+  collisionKnockbackY: 14
+  collisionKnockbackLockSeconds: 0.22
   bomb: {fileID: 251568648}
-  jumpForce: 30
-  jumpFrequency: 1.75
+  baseJumpForce: 30
+  baseJumpFrequency: 1.75
+  maxHorizontalSpeed: 18
+  horizontalInfluence: 1
+  turnDistance: 2
+  phase2HealthRatio: 0.5
+  phase2JumpForceMultiplier: 1.15
+  phase2JumpFrequencyMultiplier: 0.75
+  slamMinFallSpeed: -5
+  slamDamage: 15
+  slamRadius: 2.5
+  slamHitMask:
+    serializedVersion: 2
+    m_Bits: 1024
+  useMetroidvaniaReward: 1
+  rewardAbilityId: privilege_escalation
+  victoryDelaySeconds: 1
+  victorySceneName: Level 1
+  alsoLoadLegacyVictoryScreen: 0
   whiteLaunchParticles: {fileID: 561600609}
   yellowLaunchParticles: {fileID: 1959873840}
   crashLaunchParticles: {fileID: 757461820}

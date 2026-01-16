@@ -1,11 +1,7 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 public class Timer : MonoBehaviour
 {
@@ -36,7 +32,10 @@ public class Timer : MonoBehaviour
     private void Start()
     {
         // Set UI Timer.
-        timeDisplay.text = "Run Time: 00:00.00";
+        if (timeDisplay != null)
+        {
+            timeDisplay.text = "Run Time: 00:00.00";
+        }
         timerEnabled = false;
         Timer.instance.BeginTimer();
     }
@@ -59,8 +58,14 @@ public class Timer : MonoBehaviour
     // Update the timer.
     private IEnumerator UpdateTimer()
     {
-        while(timerEnabled)
+        while (timerEnabled)
         {
+            if (timeDisplay == null)
+            {
+                timerEnabled = false;
+                yield break;
+            }
+
             elapsedTime += Time.deltaTime;
             timeSpent = TimeSpan.FromSeconds(elapsedTime);
             string timePlayingString = "Run Time: " + timeSpent.ToString("mm':'ss'.'ff");

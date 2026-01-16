@@ -10,6 +10,13 @@ GameObject:
   m_Component:
   - component: {fileID: 2193904212644158720}
   - component: {fileID: 2835347677360910413}
+  - component: {fileID: 9001000000000000001}
+  - component: {fileID: 9001000000000000002}
+  - component: {fileID: 9001000000000000003}
+  - component: {fileID: 9001000000000000004}
+  - component: {fileID: 9001000000000000005}
+  - component: {fileID: 9001000000000000006}
+  - component: {fileID: 9001000000000000007}
   - component: {fileID: 6226129961009158131}
   - component: {fileID: 7588080149277582163}
   - component: {fileID: 8328262395326285405}
@@ -66,6 +73,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pState: {fileID: 0}
   ignoreUserInput: 0
+--- !u!114 &9001000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1474088957329560946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a9b7d1c3e4f5a6b7c8d9e0f1a2b3c4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   groundCheck: {fileID: 1188277345214144823}
   groundLayer:
     serializedVersion: 2
@@ -76,10 +95,10 @@ MonoBehaviour:
     m_Bits: 256
   moveSpeed: 10
   jumpingPower: 21
-  gravity: 0
   wallSlidingSpeed: 3
   wallJumpingTime: 0.2
   wallJumpingDuration: 0.4
+  wallJumpingPower: {x: 10, y: 20}
   dashingPower: 24
   dashingTime: 0.2
   dashingCooldown: 0.75
@@ -106,6 +125,84 @@ MonoBehaviour:
   recoilXSpeed: 25
   recoilYSpeed: 25
   hitFlashSpeed: 1
+  slowRatio: 0.45
+--- !u!114 &9001000000000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1474088957329560946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e6b3c0c7f8b4e7b9d7c1a3f5e0b9c21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &9001000000000000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1474088957329560946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c8b7a6d5e4f3a2b1c0d9e8f7a6b5c4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &9001000000000000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1474088957329560946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &9001000000000000005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1474088957329560946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1b2c3d4e5f60718293a4b5c6d7e8f90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &9001000000000000006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1474088957329560946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f1e2d3c4b5a69788796a5b4c3d2e1f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &9001000000000000007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1474088957329560946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b83c1d9a46047e8a5df2f0f7d9e0e51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slotCount: 5
+  selectedIndex: 0
+  showLabels: 0
+  hudRootName: PlayerHUD
+  dontDestroyOnLoad: 1
 --- !u!114 &6226129961009158131
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1226,7 +1323,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5364444290136464923}
   m_Layer: 10
-  m_Name: 'Down Attack Transform '
+  m_Name: DownAttackTransform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1319,7 +1416,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1367155910052703321}
   m_Layer: 10
-  m_Name: 'Up Attack Transform '
+  m_Name: UpAttackTransform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

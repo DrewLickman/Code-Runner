@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d, type: 3}
+  m_Name: WorldGraph
+  m_EditorClassIdentifier: 
+  rooms:
+  - roomId: filesystem_hub
+    sceneName: Level 1
+    exits:
+    - toRoomId: filesystem_depths
+      requiredAbilityId: 
+      requiredKeyfileId: 
+    - toRoomId: boss_firewall
+      requiredAbilityId: packet_hook
+      requiredKeyfileId: 
+  - roomId: filesystem_depths
+    sceneName: Level 2
+    exits:
+    - toRoomId: filesystem_hub
+      requiredAbilityId: 
+      requiredKeyfileId: 
+    - toRoomId: filesystem_plugs
+      requiredAbilityId: 
+      requiredKeyfileId: 
+    - toRoomId: boss_firewall
+      requiredAbilityId: packet_hook
+      requiredKeyfileId: 
+  - roomId: filesystem_plugs
+    sceneName: Level 3
+    exits:
+    - toRoomId: filesystem_depths
+      requiredAbilityId: 
+      requiredKeyfileId: 
+    - toRoomId: boss_firewall
+      requiredAbilityId: packet_hook
+      requiredKeyfileId: 
+  - roomId: boss_firewall
+    sceneName: Boss Arena
+    exits:
+    - toRoomId: filesystem_hub
+      requiredAbilityId: 
+      requiredKeyfileId: 
+

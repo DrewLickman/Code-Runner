@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -5,21 +6,41 @@ using UnityEngine.UI;
 
 public class BossScript : Enemy
 {
-    // "[SerializeFeild]" allows these variables to be edited in Unity.
-    // Boss variables.
-    private Color original;
-    private bool facingLeft = true;
-    private float recordedPlayerHP;
-    private float turnDistance = 2f; // Distance player must move until boss turns to prevent instantaneous turning.
-    private float timeSinceLastJump = 1f; // Initial jump timer.
-    [SerializeField] private GameObject bomb; // Parent object that Zip Bomber is riding.
-    [SerializeField] private float jumpForce = 35f;
-    [SerializeField] private float jumpFrequency = 2f;
+    [Header("Boss Root")]
+    [Tooltip("RigidBody to drive (the bomb the boss rides). If empty, uses this GameObject Rigidbody2D.")]
+    [SerializeField] private GameObject bomb;
+
+    [Header("Movement Pattern")]
+    [SerializeField] private float baseJumpForce = 30f;
+    [SerializeField] private float baseJumpFrequency = 1.75f;
+    [SerializeField] private float maxHorizontalSpeed = 18f;
+    [SerializeField] private float horizontalInfluence = 1.0f;
+    [SerializeField] private float turnDistance = 2f; // Prevent instantaneous turning.
+
+    [Header("Phase Tuning")]
+    [Range(0.1f, 0.9f)]
+    [SerializeField] private float phase2HealthRatio = 0.5f;
+    [SerializeField] private float phase2JumpForceMultiplier = 1.15f;
+    [SerializeField] private float phase2JumpFrequencyMultiplier = 0.75f; // lower = more frequent
+
+    [Header("Slam Attack")]
+    [SerializeField] private float slamMinFallSpeed = -5f;
+    [SerializeField] private float slamDamage = 15f;
+    [SerializeField] private float slamRadius = 2.5f;
+    [SerializeField] private LayerMask slamHitMask;
+
+    [Header("Victory / Reward")]
+    [SerializeField] private bool useMetroidvaniaReward = true;
+    [SerializeField] private string rewardAbilityId = "privilege_escalation";
+    [SerializeField] private float victoryDelaySeconds = 1.0f;
+    [SerializeField] private string victorySceneName = "Level 1";
+    [SerializeField] private bool alsoLoadLegacyVictoryScreen = false;
 
     // Access relevant components.
     private HealthManager hm;
     private GameObject playerObject;
     private SpriteRenderer spriteRenderer;
+    private Color original;
 
     // Identified in Unity Inspector.
     [SerializeField] private ParticleSystem whiteLaunchParticles;
@@ -33,24 +54,47 @@ public class BossScript : Enemy
     public Image healthBar;
     private float maxHealth;
 
+    private bool facingLeft = true;
+    private float timeSinceLastJump = 1f;
+    private bool didSlamThisFall;
+    private bool isDefeated;
+
+    public event Action Defeated;
+
+    protected override void Awake()
+    {
+        base.Awake();
+    }
+
     // Start() is called before the first frame update.
     protected override void Start()
     {
         // Access components once to save processing power.
-        rb = bomb.GetComponent<Rigidbody2D>();
-        spriteRenderer = transform.parent.GetComponent<SpriteRenderer>();
+        if (bomb != null)
+        {
+            rb = bomb.GetComponent<Rigidbody2D>();
+        }
+        else
+        {
+            rb = GetComponent<Rigidbody2D>();
+        }
+
+        spriteRenderer = transform.parent != null ? transform.parent.GetComponent<SpriteRenderer>() : GetComponent<SpriteRenderer>();
         original = spriteRenderer.color;
         playerObject = GameObject.Find("Player");
         hm = playerObject.GetComponent<HealthManager>();
         maxHealth = health;
     }
 
-    // Update() is called once per frame.
-    private new void Update()
+    protected override void Update()
     {
+        if (isDefeated) return;
+
+        // Use Enemy base recoil handling (but not base death behavior, which is now overrideable via Die()).
+        base.Update();
+
         gravityModifier(); // Launch at regular gravity, crash down after apex of launch.
         changeDirection(); // Whether player is on left or right of boss.
-        recordedPlayerHP = hm.healthAmount; // Used for determining victory or defeat
     }
 
     // FixedUpdate() can run once, zero, or several times per frame, depending on
@@ -58,7 +102,8 @@ public class BossScript : Enemy
     // fast/slow the framerate is.
     private void FixedUpdate()
     {
-        base.Update(); // Get Enemy.cs updates.
+        if (isDefeated) return;
+
         launchOffGround(); // Main movement function.
         timeSinceLastJump += Time.deltaTime;
         toggleGroundEmissions();
@@ -80,12 +125,15 @@ public class BossScript : Enemy
         StartCoroutine(hitFlash(0.25f, original));
 
         //update boss health bar
-        healthBar.fillAmount = health / maxHealth;
+        if (healthBar != null) healthBar.fillAmount = health / maxHealth;
     }
 
     // Handles boss movement.
     private void launchOffGround()
     {
+        float jumpFrequency = GetJumpFrequency();
+        float jumpForce = GetJumpForce();
+
         if (timeSinceLastJump > jumpFrequency)
         {
             launchParticles();
@@ -94,9 +142,25 @@ public class BossScript : Enemy
             Vector3 myPosition = transform.position;
             Vector2 direction = (playerPosition - myPosition);
             
-            rb.velocity = new Vector2(rb.velocity.x + (direction.x), rb.velocity.y + jumpForce);
+            float targetVx = Mathf.Clamp(direction.x * horizontalInfluence, -maxHorizontalSpeed, maxHorizontalSpeed);
+            rb.velocity = new Vector2(targetVx, jumpForce);
             timeSinceLastJump = 0;
+            didSlamThisFall = false;
         }
+    }
+
+    private float GetJumpForce()
+    {
+        if (maxHealth <= 0) return baseJumpForce;
+        bool phase2 = health / maxHealth <= phase2HealthRatio;
+        return phase2 ? baseJumpForce * phase2JumpForceMultiplier : baseJumpForce;
+    }
+
+    private float GetJumpFrequency()
+    {
+        if (maxHealth <= 0) return baseJumpFrequency;
+        bool phase2 = health / maxHealth <= phase2HealthRatio;
+        return phase2 ? baseJumpFrequency * phase2JumpFrequencyMultiplier : baseJumpFrequency;
     }
 
     private void launchParticles()
@@ -134,14 +198,38 @@ public class BossScript : Enemy
     // If the boss is at the apex of its jump (plus slight delay), increase gravity to simulate ground slam.
     private void gravityModifier()
     {
-        if (rb.velocity.y < -5)
+        if (rb.velocity.y < slamMinFallSpeed)
         {
             rb.gravityScale = 100;
+
+            // Trigger slam damage once per fall when moving fast downward.
+            if (!didSlamThisFall)
+            {
+                TrySlamDamage();
+                didSlamThisFall = true;
+            }
         }
         else
         {
             rb.gravityScale = 5;
         }
+    }
+
+    private void TrySlamDamage()
+    {
+        if (slamDamage <= 0) return;
+        if (hm == null || playerObject == null) return;
+
+        // If no mask is set, fall back to distance check to the player.
+        if (slamHitMask.value == 0)
+        {
+            float dist = Vector2.Distance(transform.position, playerObject.transform.position);
+            if (dist <= slamRadius) hm.TakeDamage(slamDamage);
+            return;
+        }
+
+        Collider2D hit = Physics2D.OverlapCircle(transform.position, slamRadius, slamHitMask);
+        if (hit != null && hit.CompareTag("Player")) hm.TakeDamage(slamDamage);
     }
 
     // Change the direction of the boss.
@@ -169,19 +257,46 @@ public class BossScript : Enemy
         spriteRenderer.color = originalColor;
     }
 
-    // Handles which screen to show when defeating boss or boss defeats player.
-    private void OnDestroy()
+    protected override void Die()
     {
-        // Stop timer.
-        Timer.instance.EndTimer();
+        if (isDefeated) return;
+        isDefeated = true;
 
-        if (recordedPlayerHP > 0)
+        // Stop movement/interaction.
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
+        if (rb != null) rb.velocity = Vector2.zero;
+
+        // Reward unlock for vertical slice.
+        if (useMetroidvaniaReward)
+        {
+            AbilitySystem system = GameRoot.Instance != null ? GameRoot.Instance.GetComponent<AbilitySystem>() : FindFirstObjectByType<AbilitySystem>();
+            if (system != null && !string.IsNullOrWhiteSpace(rewardAbilityId))
+            {
+                system.Unlock(rewardAbilityId);
+            }
+        }
+
+        // End the timer if present (non-fatal if missing).
+        if (Timer.instance != null) Timer.instance.EndTimer();
+
+        Defeated?.Invoke();
+        StartCoroutine(VictoryRoutine());
+    }
+
+    private IEnumerator VictoryRoutine()
+    {
+        yield return new WaitForSeconds(victoryDelaySeconds);
+
+        if (alsoLoadLegacyVictoryScreen)
         {
             SceneManager.LoadScene("Victory Screen");
+            yield break;
         }
-        else
+
+        if (!string.IsNullOrWhiteSpace(victorySceneName))
         {
-            SceneManager.LoadScene("GameOver");
+            SceneManager.LoadScene(victorySceneName);
         }
     }
 }
