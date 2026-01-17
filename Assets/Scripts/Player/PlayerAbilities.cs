@@ -15,7 +15,7 @@ public class PlayerAbilities : MonoBehaviour
     private PlayerStateMachine stateMachine;
     private PlayerSwingController swing;
 
-    private bool canDoubleJump;
+    private bool canDoubleJump = true;
 
     private bool isWallSliding;
     private bool isWallJumping;
@@ -91,7 +91,10 @@ public class PlayerAbilities : MonoBehaviour
 
     private void TryJump(bool jumpPressed)
     {
-        if (!jumpPressed || !canDoubleJump) return;
+        if (!jumpPressed || !canDoubleJump)
+        {
+            return;
+        }
 
         bool wasGrounded = motor.IsGrounded();
         if (!wasGrounded) canDoubleJump = false;

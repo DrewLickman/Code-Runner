@@ -61,13 +61,20 @@ public class HangingPlug : MonoBehaviour
     {
         if (sharedSprite != null) return sharedSprite;
 
-        Texture2D tex = new Texture2D(1, 1, TextureFormat.RGBA32, false);
-        tex.SetPixel(0, 0, Color.white);
+        // Create a larger texture (16x16) to support proper tiling with Sliced mode
+        Texture2D tex = new Texture2D(16, 16, TextureFormat.RGBA32, false);
+        Color[] pixels = new Color[16 * 16];
+        for (int i = 0; i < pixels.Length; i++)
+        {
+            pixels[i] = Color.white;
+        }
+        tex.SetPixels(pixels);
         tex.Apply();
         tex.wrapMode = TextureWrapMode.Clamp;
         tex.filterMode = FilterMode.Point;
 
-        sharedSprite = Sprite.Create(tex, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f), 100f);
+        // Create sprite with borders for proper slicing (1 pixel border on all sides)
+        sharedSprite = Sprite.Create(tex, new Rect(0, 0, 16, 16), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, new Vector4(1, 1, 1, 1));
         return sharedSprite;
     }
 

@@ -23,12 +23,13 @@ public class PlayerInputReader : MonoBehaviour
             return;
         }
 
+        bool jumpDown = Input.GetButtonDown("Jump");
         Current = new PlayerInputIntent
         {
             AttackDown = Input.GetButtonDown("Attack"),
             Vertical = Input.GetAxisRaw("Vertical"),
             Horizontal = Input.GetAxisRaw("Horizontal"),
-            JumpDown = Input.GetButtonDown("Jump"),
+            JumpDown = jumpDown,
             JumpHeld = Input.GetButton("Jump"),
             JumpUp = Input.GetButtonUp("Jump"),
             DashDown = Input.GetButtonDown("Dash"),

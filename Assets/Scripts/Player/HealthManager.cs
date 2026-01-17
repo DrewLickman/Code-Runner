@@ -65,7 +65,11 @@ public class HealthManager : MonoBehaviour
         if (transform.position.y <= deathFloorHeight)
         {
             // Make sure to zero the player's velocity and movement to prevent clipping into terrain
-            rb.velocity = new Vector2(0, 0);
+            // Only set velocity if Rigidbody2D exists and is not static
+            if (rb != null && rb.bodyType != RigidbodyType2D.Static)
+            {
+                rb.velocity = new Vector2(0, 0);
+            }
 
             TakeDamage(healthAmount);
         }
